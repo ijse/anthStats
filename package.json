@@ -1,0 +1,13 @@
+{
+  "name": "anthStats",
+  "description": "",
+  "version": "0.0.1",
+  "main": "anthStats.js",
+  "devDependencies": {
+    "chai": "*",
+    "mocha": "*"
+  },
+  "scripts": {
+    "test": "mocha --reporter spec"
+  }
+}
