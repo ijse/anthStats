@@ -23,6 +23,11 @@
 	var _statsEvents = {};
 	var _loadTimestamp = new Date();
 
+	var _init = function() {
+		_defaultValue = '';
+		_statsEvents = {};
+	};
+
 	// Serialize array to query string with encodeURI
 	var _serilizeData = function(arr) {
 		var result = [];
@@ -46,18 +51,16 @@
 	}
 
 	// Send http request method
-	var _sendJSONP = function(url, success, error) {
-		// Create script element to send jsonp(GET) request
-		var tag = document.createElement('script');
-		tag.src = url;
-		tag.onload = tag.onreadystatechange = function() {
-			if(!this.readyState || this.readyState=='loaded' || this.readyState=='complete') {
-				// Request sended
-				success();
+	var _sendJSONP = function(url, success) {
+		var ts = (new Date()).getTime();
+		var img = new Image();
+		img.src = url + "&ts=" + ts;
 
-				// todo: remove tag
-			}
-		}
+		// Not care 404
+		img.onload = img.onerror = function() {
+			success();
+			img.onload = img.onerror = null;
+		};
 	};
 
 	var _sendHTTP = function(url, callback) {
@@ -81,7 +84,7 @@
 
 		// send request
 		if(Http) {
-			_sendHTTP(reportUrl, callback, callback);
+			_sendHTTP(reportUrl, callback);
 		} else {
 			_sendJSONP(reportUrl, callback);
 		}
@@ -104,6 +107,9 @@
 
 	// Define stats types
 	var _defineEvent = function(typeName, configs) {
+		if(!configs.url) throw new Error('Need the request url.');
+		if(!configs.schema) configs.schema = [];
+
 		_statsEvents[typeName] = configs;
 		return _statsEvents;
 	};
@@ -112,6 +118,8 @@
 		var reportUrl = '';
 		var eventName = args[0];
 		var eventConfig = _statsEvents[eventName];
+
+		if(!eventConfig) throw new Error('Undefined event ' + eventName + '.');
 
 		// Apply data, merge with defaults
 		var params = _deepCopyObject(eventConfig.defaults);
@@ -123,14 +131,13 @@
 			}
 		}
 
-		setTimeout(function() {
-			_send(eventConfig.url, params, callback);
-		} , 0);
+		_send(eventConfig.url, params, callback);
 	};
 
 	_exports.setDefault = _setDefault;
 	_exports.defineEvent = _defineEvent;
 	_exports.push = _push;
+	_exports.init = _init;
 
 	return _exports;
 })
