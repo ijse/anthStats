@@ -1,10 +1,17 @@
-var should = require('chai').should();
+
+if(!Should) {
+	var Should = require('should');
+}
 
 describe('anthStats', function () {
 
 	var __stats = null;
 	before(function() {
-		__stats = require('../anthStats.js');
+		if(typeof window === 'undefined') {
+			__stats = require('../anthStats.js');
+		} else {
+			__stats = window.__stats;
+		}
 	});
 
 	it('#setDefault()', function () {

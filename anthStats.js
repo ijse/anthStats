@@ -11,7 +11,7 @@
 		module.exports = definition(http);
 	} else {
 		// in browser or others
-		this[name] = definition();
+		window[name] = definition();
 	}
 
 })('__stats', function(Http) {
@@ -21,6 +21,7 @@
 
 	var _defaultValue = '';
 	var _statsEvents = {};
+	var _loadTimestamp = new Date();
 
 	// Serialize array to query string with encodeURI
 	var _serilizeData = function(arr) {
@@ -78,7 +79,7 @@
 		// Concat with url
 		reportUrl += "?" + _defaultValue + "&" + paramsStr;
 
-		// todo: send request
+		// send request
 		if(Http) {
 			_sendHTTP(reportUrl, callback, callback);
 		} else {
