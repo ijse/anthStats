@@ -14,19 +14,10 @@
 		window[name] = definition();
 	}
 
-})('__stats', function(Http) {
+})('anthStats', function(Http) {
 	"use strict";
 
-	var _exports = {};
-
-	var _defaultValue = '';
-	var _statsEvents = {};
 	var _loadTimestamp = new Date();
-
-	var _init = function() {
-		_defaultValue = '';
-		_statsEvents = {};
-	};
 
 	// Serialize array to query string with encodeURI
 	var _serilizeData = function(arr) {
@@ -68,7 +59,7 @@
 		Http.get(url, callback).on('error', callback);
 	};
 
-	var _send = function(reportUrl, params, cb) {
+	var _send = function(reportUrl, params, defaultParamsStr, cb) {
 		// Convert object to arr
 		var paramsArr = [];
 		var paramsKeys = Object.keys(params);
@@ -80,7 +71,7 @@
 		var paramsStr = _serilizeData(paramsArr)
 
 		// Concat with url
-		reportUrl += "?" + _defaultValue + "&" + paramsStr;
+		reportUrl += "?" + defaultParamsStr + "&" + paramsStr;
 
 		// send request
 		if(Http) {
@@ -97,27 +88,49 @@
 		return reportUrl;
 	};
 
+	// Create instance
+	var anthStats = function anthStatsF(options) {
+		this.options = {
+			// default settings
+		};
+
+		options && typeof options == 'object' && this.setOptions(options);
+		this.defaultValue = "";
+		this.statsEvents = {};
+	};
+
+	// Process options
+	anthStats.prototype.setOptions = function setOptionsF(options){
+        // shallow copy
+        var o = this.options;
+        var key;
+
+        for (key in options)
+        	options.hasOwnProperty(key) && (o[key] = options[key]);
+
+        return this;
+    };
+
 	// Set default value that send with every request
 	// param - Array [ [ item, default_value, ...], ...]
-	var _setDefault = function(param) {
-		_defaultValue = _serilizeData(param);
-
-		return _defaultValue;
+	anthStats.prototype.setDefault = function setDefaultF(param) {
+		this.defaultValue = _serilizeData(param);
+		return this.defaultValue;
 	};
 
 	// Define stats types
-	var _defineEvent = function(typeName, configs) {
+	anthStats.prototype.defineEvent = function defineEventF(typeName, configs) {
 		if(!configs.url) throw new Error('Need the request url.');
 		if(!configs.schema) configs.schema = [];
 
-		_statsEvents[typeName] = configs;
-		return _statsEvents;
+		this.statsEvents[typeName] = configs;
+		return this.statsEvents;
 	};
 
-	var _push = function(args, callback) {
+	anthStats.prototype.push = function(args, callback) {
 		var reportUrl = '';
 		var eventName = args[0];
-		var eventConfig = _statsEvents[eventName];
+		var eventConfig = this.statsEvents[eventName];
 
 		if(!eventConfig) throw new Error('Undefined event ' + eventName + '.');
 
@@ -131,14 +144,9 @@
 			}
 		}
 
-		_send(eventConfig.url, params, callback);
+		_send(eventConfig.url, params, this.defaultValue, callback);
 	};
 
-	_exports.setDefault = _setDefault;
-	_exports.defineEvent = _defineEvent;
-	_exports.push = _push;
-	_exports.init = _init;
-
-	return _exports;
+	return anthStats;
 })
 

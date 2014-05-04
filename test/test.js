@@ -5,16 +5,20 @@ if(!Should) {
 
 describe('anthStats', function () {
 
-	var __stats = null;
+	var anthStats;
 	before(function() {
 		if(typeof window === 'undefined') {
-			__stats = require('../anthStats.js');
+			anthStats = require('../anthStats.js');
 		} else {
-			__stats = window.__stats;
+			anthStats = window.anthStats;
 		}
 	});
 
 	describe('#setDefault()', function() {
+		var __stats;
+		before(function() {
+			__stats = new anthStats();
+		})
 		it('return the query string of default values.', function () {
 			var result = __stats.setDefault([
 				['userId', 9527],
@@ -26,9 +30,9 @@ describe('anthStats', function () {
 	});
 
 	describe('#defineEvent()', function() {
-
+		var __stats;
 		beforeEach(function() {
-			__stats.init();
+			__stats = new anthStats();
 			__stats.setDefault([
 				['userId', 9527],
 				['serial', 'xxx']
@@ -65,9 +69,9 @@ describe('anthStats', function () {
 	});
 
 	describe('#push()', function() {
-
+		var __stats;
 		before(function() {
-			__stats.init();
+			__stats = new anthStats();
 			__stats.setDefault([
 				['userId', 9527],
 				['serial', 'xxx']
