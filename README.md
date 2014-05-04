@@ -23,17 +23,13 @@ npm install --save anthStats
 
 ```
 var __stats = new anthStats({
-	debug: false
+	debug: false,
+	defaults: {
+		serial: 'xxx'
+	}
 });
 ```
 
-### anthStats#setDefault()
-```
-var result = __stats.setDefault([
-	['userId', 9527],
-	['serial', 'xxx']
-]);
-```
 ### anthStats#defineEvent()
 ```
 var pageVisitConfigs = {
