@@ -6,8 +6,9 @@
 
 * Support browser and Node.js
 * Configurable default data for global and certain event
-* Auto append timestamp for requests from browser
-* *Buffer stats
+* Auto appending timestamp for requests from browser
+* Debounce and throttle control
+* *Buffer stat requests
 
 ## Installation
 
@@ -19,25 +20,31 @@ npm install --save anthStats
 
 ## API
 
-### anthStats.setDefault()
+var __stats = new anthStats({
+	debug: false
+});
+
+### anthStats#setDefault()
 ```
 var result = __stats.setDefault([
 	['userId', 9527],
 	['serial', 'xxx']
 ]);
 ```
-### anthStats.defineEvent()
+### anthStats#defineEvent()
 ```
 var pageVisitConfigs = {
 	url: "http://baidu.com/url",
 	defaults: { count: 0, from: 'web' },
-	schema: [ 'count', 'action' ]
+	schema: [ 'count', 'action' ],
+	throttle: 500
+	// debounce: 15
 };
 var result = __stats.defineEvent('page_visit', pageVisitConfigs);
 ```
-### anthStats.push()
+### anthStats#push()
 ```
-__stats.push(['page_visit', 1]);
+__stats.push(['page_visit', 1], callback);
 ```
 
 ## Testing
