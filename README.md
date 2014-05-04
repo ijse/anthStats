@@ -9,7 +9,7 @@
 * Configurable default data for global and certain event
 * Auto appending timestamp for requests from browser
 * Debounce and throttle control
-* *Buffer stat requests
+* *Buffer requests
 
 ## Installation
 
@@ -19,7 +19,20 @@ Install with npm:
 npm install --save anthStats
 ```
 
-## API
+Insert in html:
+
+```
+<html>
+	<head>
+		...
+		<script src="anthStats.js"></script>
+		...
+	</head>
+	...
+</html>
+```
+
+## anthStats API
 
 ```
 var __stats = new anthStats({
