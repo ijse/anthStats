@@ -101,7 +101,7 @@ describe('anthStats', function () {
 			task ++;
 		});
 
-		it('use default value if .', function(done) {
+		it('use default value if it is not .', function(done) {
 			var task = 0;
 			__stats.push(['page_visit'], function(result) {
 
