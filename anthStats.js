@@ -179,13 +179,6 @@
 		return this;
 	};
 
-	// Set default value that send with every request
-	// param - Array [ [ item, default_value, ...], ...]
-	anthStats.prototype.setDefault = function setDefaultF(param) {
-		this.defaultValue = _serilizeData(param);
-		return this.defaultValue;
-	};
-
 	// Define stats types
 	anthStats.prototype.defineEvent = function defineEventF(typeName, configs) {
 		if(!configs.url) throw new Error('Need the request url.');

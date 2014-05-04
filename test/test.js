@@ -71,10 +71,6 @@ describe('anthStats', function () {
 		var __stats;
 		beforeEach(function() {
 			__stats = new anthStats({ debug: true });
-			__stats.setDefault([
-				['userId', 9527],
-				['serial', 'xxx']
-			]);
 			__stats.defineEvent('page_visit', {
 				url: "http://www.baidu.com/url",
 				defaults: { count: 0, from: 'web' },
