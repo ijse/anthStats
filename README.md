@@ -2,6 +2,12 @@
 
 [![Build Status](https://secure.travis-ci.org/ijse/anthStats.png?branch=master)](http://travis-ci.org/user/anthStats)
 
+## Features
+
+* Support browser and Node.js
+* Configurable default data for global and certain event
+* Auto append timestamp for requests from browser
+* *Buffer stats
 
 ## Installation
 
