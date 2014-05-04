@@ -18,6 +18,10 @@
 	"use strict";
 
 	var _loadTimestamp = new Date();
+	var _log = function(eventName, logs) {
+		var d = new Date();
+		console.log('anthStats[' + eventName + '] ' + d.toISOString() + ' ', logs);
+	};
 
 	var debounce = function(func, wait, immediate) {
 		var timeout, result;
@@ -103,6 +107,7 @@
 	};
 
 	var _send = function(args, cb) {
+		var _this = this;
 		// Convert object to arr
 		var paramsArr = [];
 		var paramsKeys = Object.keys(args.data);
@@ -121,6 +126,8 @@
 		args.config.sendMethod(reportUrl, callback);
 
 		function callback() {
+			// Print logs
+			_this.options.debug && _log(args.event, reportUrl);
 			// success
 			cb(reportUrl);
 		}

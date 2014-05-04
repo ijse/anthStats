@@ -73,7 +73,7 @@ describe('anthStats', function () {
 	describe('#push()', function() {
 		var __stats;
 		beforeEach(function() {
-			__stats = new anthStats();
+			__stats = new anthStats({ debug: true });
 			__stats.setDefault([
 				['userId', 9527],
 				['serial', 'xxx']
