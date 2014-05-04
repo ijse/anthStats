@@ -1,7 +1,6 @@
 
-var Should, sinon;
 if(!Should) {
-	Should = require('should');
+	var Should = require('should');
 }
 
 describe('anthStats', function () {
@@ -16,18 +15,20 @@ describe('anthStats', function () {
 		}
 	});
 
-	describe('#setDefault()', function() {
+	describe('#setOptions()', function() {
 		var __stats;
 		before(function() {
 			__stats = new anthStats();
 		});
 		it('return the query string of default values.', function () {
-			var result = __stats.setDefault([
-				['userId', 9527],
-				['serial', 'xxx']
-			]);
+			var result = __stats.setOptions({
+				defaults: {
+					userId: 9527,
+					serial: 'xxx'
+				}
+			});
 
-			result.should.be.eql('userId=9527&serial=xxx');
+			result.defaultsValue.should.be.eql('userId=9527&serial=xxx');
 		});
 	});
 
@@ -35,10 +36,6 @@ describe('anthStats', function () {
 		var __stats;
 		beforeEach(function() {
 			__stats = new anthStats();
-			__stats.setDefault([
-				['userId', 9527],
-				['serial', 'xxx']
-			]);
 		});
 		it('add page_visit event.', function() {
 			var pageVisitConfigs = {
@@ -89,7 +86,7 @@ describe('anthStats', function () {
 			var task = 0;
 			__stats.push(['page_visit', 1, 'click'], function(result) {
 
-				result.should.be.eql('http://www.baidu.com/url?userId=9527&serial=xxx&count=1&from=web&action=click');
+				result.should.be.eql('http://www.baidu.com/url?count=1&from=web&action=click');
 				task.should.be.equal(1);
 				done();
 			});
@@ -100,7 +97,7 @@ describe('anthStats', function () {
 			var task = 0;
 			__stats.push(['page_visit', 1 ], function(result) {
 
-				result.should.be.eql('http://www.baidu.com/url?userId=9527&serial=xxx&count=1&from=web');
+				result.should.be.eql('http://www.baidu.com/url?count=1&from=web');
 				task.should.be.equal(1);
 				done();
 			});
@@ -111,7 +108,7 @@ describe('anthStats', function () {
 			var task = 0;
 			__stats.push(['page_visit'], function(result) {
 
-				result.should.be.eql('http://www.baidu.com/url?userId=9527&serial=xxx&count=0&from=web');
+				result.should.be.eql('http://www.baidu.com/url?count=0&from=web');
 				task.should.be.equal(1);
 				done();
 			});

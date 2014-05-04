@@ -120,7 +120,11 @@
 
 		// Concat with url
 		var reportUrl = args.config.url;
-		reportUrl += "?" + args.defaultValue + "&" + paramsStr;
+		reportUrl += "?";
+		if(args.defaultValue) {
+			reportUrl += args.defaultValue + "&";
+		}
+		reportUrl += paramsStr;
 
 		// send request
 		args.config.sendMethod(reportUrl, callback);
@@ -140,22 +144,37 @@
 		// default settings
 		this.options = {
 			// Debug mode, print logs
-			debug: false
+			debug: false,
+			defaults: {}
 		};
-
-		options && typeof options == 'object' && this.setOptions(options);
-		this.defaultValue = "";
+		this.defaultsValue = "";
 		this.statsEvents = {};
+		options && typeof options == 'object' && this.setOptions(options);
 	};
 
 	// Process options
 	anthStats.prototype.setOptions = function setOptionsF(options){
-		// shallow copy
+		// Shallow copy
 		var o = this.options;
+		var p = options.defaults
 		var key;
 
+		// Concat defaults
+		if(typeof p === 'object') {
+			for (key in p) p.hasOwnProperty(key) && (o.defaults[key] = p[key]);
+
+			// Update serialized defaults
+			this.defaultsValue =(function() {
+				var key, x = [];
+				for (key in o.defaults)
+					x.push(key + '=' + encodeURIComponent(o.defaults[key]));
+
+				return x.join('&');
+			})();
+		}
+
 		for (key in options)
-			options.hasOwnProperty(key) && (o[key] = options[key]);
+			options.hasOwnProperty(key) && (key !== 'defaults') && (o[key] = options[key]);
 
 		return this;
 	};
@@ -208,7 +227,7 @@
 			event: eventName,
 			config: eventConfig,
 			data: params,
-			defaultValue: this.defaultValue
+			defaultValue: this.defaultsValue
 		}, callback)
 
 	};
