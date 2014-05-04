@@ -8,7 +8,7 @@ describe('anthStats', function () {
 	var anthStats;
 	before(function() {
 		if(typeof window === 'undefined') {
-			anthStats = require('../anthStats.js');
+			anthStats = require('../');
 			sinon = require('sinon');
 		} else {
 			anthStats = window.anthStats;
