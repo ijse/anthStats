@@ -1,6 +1,7 @@
 
+var Should, sinon;
 if(!Should) {
-	var Should = require('should');
+	Should = require('should');
 }
 
 describe('anthStats', function () {
@@ -9,6 +10,7 @@ describe('anthStats', function () {
 	before(function() {
 		if(typeof window === 'undefined') {
 			anthStats = require('../anthStats.js');
+			sinon = require('sinon');
 		} else {
 			anthStats = window.anthStats;
 		}
@@ -18,7 +20,7 @@ describe('anthStats', function () {
 		var __stats;
 		before(function() {
 			__stats = new anthStats();
-		})
+		});
 		it('return the query string of default values.', function () {
 			var result = __stats.setDefault([
 				['userId', 9527],
@@ -70,7 +72,7 @@ describe('anthStats', function () {
 
 	describe('#push()', function() {
 		var __stats;
-		before(function() {
+		beforeEach(function() {
 			__stats = new anthStats();
 			__stats.setDefault([
 				['userId', 9527],
@@ -120,7 +122,53 @@ describe('anthStats', function () {
 			(function() {
 				__stats.push(['undefined_event', 1]);
 			}).should.throw();
-		})
+		});
+
+		it('With debounce enabled, only send event twice', function(done) {
+			__stats.defineEvent('test_debounce', {
+				url: "http://www.baidu.com/url",
+				defaults: { name: 'ijse' },
+				schema: [ 'name' ],
+				debounce: 5
+			});
+
+			var callback = sinon.spy();
+			setTimeout(function() {
+				__stats.push(['test_debounce', 'xx1'], callback);
+			}, 10);
+			setTimeout(function() {
+				__stats.push(['test_debounce', 'xx2'], callback);
+			}, 20);
+			__stats.push(['test_debounce', 'xx3'], callback);
+			__stats.push(['test_debounce', 'xx4'], callback);
+
+			setTimeout(function() {
+				callback.calledTwice.should.be.true;
+				done();
+			}, 100);
+		});
+
+		it('With throttle enabled, wait 500ms before the last event.', function(done) {
+			__stats.defineEvent('test_throttle', {
+				url: "http://www.baidu.com/url",
+				defaults: { name: 'aaa' },
+				schema: [ 'name' ],
+				throttle: 500
+			});
+
+			var stub;
+			var callback = function() {
+				if(stub) {
+					// Assert with ±100ms
+					(new Date() - stub).should.be.approximately(500, 100);
+					done();
+				} else {
+					stub = new Date();
+				}
+			};
+			__stats.push(['test_throttle', 'xxx'], callback);
+			__stats.push(['test_throttle', 'xdx'], callback);
+		});
 
 	});
 

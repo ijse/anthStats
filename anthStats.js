@@ -19,6 +19,47 @@
 
 	var _loadTimestamp = new Date();
 
+	var debounce = function(func, wait, immediate) {
+		var timeout, result;
+		return function() {
+			var context = this, args = arguments;
+			var later = function() {
+				timeout = null;
+				if (!immediate) result = func.apply(context, args);
+			};
+			var callNow = immediate && !timeout;
+			clearTimeout(timeout);
+			timeout = setTimeout(later, wait);
+			if (callNow) result = func.apply(context, args);
+			return result;
+		};
+	};
+
+	var throttle = function(func, wait) {
+		var context, args, timeout, result;
+		var previous = 0;
+		var later = function() {
+			previous = new Date;
+			timeout = null;
+			result = func.apply(context, args);
+		};
+		return function() {
+			var now = new Date;
+			var remaining = wait - (now - previous);
+			context = this;
+			args = arguments;
+			if (remaining <= 0) {
+				clearTimeout(timeout);
+				timeout = null;
+				previous = now;
+				result = func.apply(context, args);
+			} else if (!timeout) {
+				timeout = setTimeout(later, remaining);
+			}
+			return result;
+		};
+	};
+
 	// Serialize array to query string with encodeURI
 	var _serilizeData = function(arr) {
 		var result = [];
@@ -42,43 +83,41 @@
 	}
 
 	// Send http request method
-	var _sendJSONP = function(url, success) {
+	var _sendJSONP = function(url, callback) {
 		var ts = (new Date()).getTime();
 		var img = new Image();
 		img.src = url + "&ts=" + ts;
 
 		// Not care 404
 		img.onload = img.onerror = function() {
-			success();
+			callback();
 			img.onload = img.onerror = null;
 		};
 	};
 
 	var _sendHTTP = function(url, callback) {
 		// Node env
-		Http.get(url, callback).on('error', callback);
+		Http.get(url);
+		setTimeout(callback, 0);
 	};
 
-	var _send = function(reportUrl, params, defaultParamsStr, cb) {
+	var _send = function(args, cb) {
 		// Convert object to arr
 		var paramsArr = [];
-		var paramsKeys = Object.keys(params);
+		var paramsKeys = Object.keys(args.data);
 		for(var i=0, l=paramsKeys.length; i<l; i++) {
 			var key = paramsKeys[i];
-			paramsArr.push([ key, params[key]]);
+			paramsArr.push([ key, args.data[key]]);
 		}
 		// Compile data, convert array to query string
-		var paramsStr = _serilizeData(paramsArr)
+		var paramsStr = _serilizeData(paramsArr);
 
 		// Concat with url
-		reportUrl += "?" + defaultParamsStr + "&" + paramsStr;
+		var reportUrl = args.config.url;
+		reportUrl += "?" + args.defaultValue + "&" + paramsStr;
 
 		// send request
-		if(Http) {
-			_sendHTTP(reportUrl, callback);
-		} else {
-			_sendJSONP(reportUrl, callback);
-		}
+		args.config.sendMethod(reportUrl, callback);
 
 		function callback() {
 			// success
@@ -90,8 +129,10 @@
 
 	// Create instance
 	var anthStats = function anthStatsF(options) {
+		// default settings
 		this.options = {
-			// default settings
+			// Debug mode, print logs
+			debug: false
 		};
 
 		options && typeof options == 'object' && this.setOptions(options);
@@ -123,6 +164,17 @@
 		if(!configs.url) throw new Error('Need the request url.');
 		if(!configs.schema) configs.schema = [];
 
+		configs.sendMethod = (function() {
+			var sendMethod = Http ? _sendHTTP : _sendJSONP;
+			if(configs.debounce) {
+				return debounce(sendMethod, configs.debounce, false);
+			} else if(configs.throttle) {
+				return throttle(sendMethod, configs.throttle);
+			} else {
+				return sendMethod;
+			}
+		})();
+
 		this.statsEvents[typeName] = configs;
 		return this.statsEvents;
 	};
@@ -144,7 +196,13 @@
 			}
 		}
 
-		_send(eventConfig.url, params, this.defaultValue, callback);
+		_send.call(this, {
+			event: eventName,
+			config: eventConfig,
+			data: params,
+			defaultValue: this.defaultValue
+		}, callback)
+
 	};
 
 	return anthStats;
