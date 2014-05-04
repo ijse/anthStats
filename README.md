@@ -5,6 +5,7 @@
 ## Features
 
 * Support browser and Node.js
+* Url encoded before sending
 * Configurable default data for global and certain event
 * Auto appending timestamp for requests from browser
 * Debounce and throttle control
@@ -20,9 +21,11 @@ npm install --save anthStats
 
 ## API
 
+```
 var __stats = new anthStats({
 	debug: false
 });
+```
 
 ### anthStats#setDefault()
 ```

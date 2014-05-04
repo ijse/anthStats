@@ -150,15 +150,15 @@
 
 	// Process options
 	anthStats.prototype.setOptions = function setOptionsF(options){
-        // shallow copy
-        var o = this.options;
-        var key;
+		// shallow copy
+		var o = this.options;
+		var key;
 
-        for (key in options)
-        	options.hasOwnProperty(key) && (o[key] = options[key]);
+		for (key in options)
+			options.hasOwnProperty(key) && (o[key] = options[key]);
 
-        return this;
-    };
+		return this;
+	};
 
 	// Set default value that send with every request
 	// param - Array [ [ item, default_value, ...], ...]
