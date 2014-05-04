@@ -107,7 +107,7 @@ describe('anthStats', function () {
 			task ++;
 		});
 
-		it('use default value if it is not .', function(done) {
+		it('use default value if it is not provided.', function(done) {
 			var task = 0;
 			__stats.push(['page_visit'], function(result) {
 
@@ -129,23 +129,25 @@ describe('anthStats', function () {
 				url: "http://www.baidu.com/url",
 				defaults: { name: 'ijse' },
 				schema: [ 'name' ],
-				debounce: 5
+				debounce: 15
 			});
 
 			var callback = sinon.spy();
 			setTimeout(function() {
 				__stats.push(['test_debounce', 'xx1'], callback);
-			}, 10);
+			}, 5);
 			setTimeout(function() {
 				__stats.push(['test_debounce', 'xx2'], callback);
 			}, 20);
 			__stats.push(['test_debounce', 'xx3'], callback);
-			__stats.push(['test_debounce', 'xx4'], callback);
+			setTimeout(function() {
+				__stats.push(['test_debounce', 'xx4'], callback);
+			}, 50);
 
 			setTimeout(function() {
 				callback.calledTwice.should.be.true;
 				done();
-			}, 100);
+			}, 600);
 		});
 
 		it('With throttle enabled, wait 500ms before the last event.', function(done) {

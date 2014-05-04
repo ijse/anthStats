@@ -97,6 +97,7 @@
 
 	var _sendHTTP = function(url, callback) {
 		// Node env
+		// Http.get(url, callback).on('error', callback);
 		Http.get(url);
 		setTimeout(callback, 0);
 	};
