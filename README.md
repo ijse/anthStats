@@ -8,7 +8,7 @@
 * Url encoded before sending
 * Configurable default data for global and certain event
 * Auto appending timestamp for requests from browser
-* Debounce and throttle control
+* Debounce and throttle limits
 * *Buffer requests
 
 ## Installation
@@ -58,6 +58,13 @@ var result = __stats.defineEvent('page_visit', pageVisitConfigs);
 ```
 __stats.push(['page_visit', 1], callback);
 ```
+
+## Example
+
+```
+npm start
+```
+and open url `http://localhost:8000`.
 
 ## Testing
 
