@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>anthStats sample</title>
+
+	<script src="../lib/anthStats.js"></script>
+	<script>
+		console.log("Not this console!");
+		var __stats = new anthStats({
+			defaults: {
+				userId: 9527
+			}
+		});
+		__stats.defineEvent('page_visit', {
+			url: "/stat",
+			defaults: { type: 'page_visit' },
+			schema: []
+		});
+		__stats.push(['page_visit']);
+
+		// Normal type
+		__stats.defineEvent('button_click', {
+			url: "/stat",
+			defaults: { type: 'button_click', buttonId: 0 },
+			schema: [ 'buttonId', 'userId' ]
+		});
+
+		__stats.defineEvent('test_debounce', {
+			url: "/stat",
+			defaults: { type: 'test_debounce', buttonId: 0 },
+			schema: [ 'buttonId', 'userId' ],
+			debounce: 300
+		});
+		__stats.defineEvent('test_throttle', {
+			url: "/stat",
+			defaults: { type: 'test_throttle', buttonId: 0 },
+			schema: [ 'buttonId', 'userId' ],
+			throttle: 1000
+		});
+
+	</script>
+</head>
+<body>
+	<h1> Click and Go watch Your Console! </h1>
+	<hr/>
+	<ul>
+	<li>
+		<a href="javascript:;" onclick="__stats.push(['button_click', 10086]);"> Mr. Button </a> :
+		send every request.
+	</li>
+	<li>
+		<a href="javascript:;" onclick="__stats.push(['test_debounce', 10086]);"> Test Debounce 300ms</a>
+		postpone sending request until after wait 300ms have elapsed since the last time it was invoked.
+	</li>
+	<li>
+		<a href="javascript:;" onclick="__stats.push(['test_throttle', 10086]);"> Test Throttle 1000ms </a> :
+		will send request as soon as you call it for the first time, and, if you call it again any number of times during the wait period 1000ms, as soon as that period is over.
+	</li>
+
+
+</pre>
+</body>
+</html>
