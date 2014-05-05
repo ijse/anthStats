@@ -5,9 +5,12 @@
   "main": "anthStats.js",
   "devDependencies": {
     "mocha": "*",
-    "should": "~3.3.1"
+    "should": "~3.3.1",
+    "sinon": "~1.9.1",
+    "ecstatic": "~0.5.1"
   },
   "scripts": {
+    "start": "node ./examples/server.js",
     "test": "./node_modules/.bin/mocha --reporter spec --timeout 5000"
   }
 }
