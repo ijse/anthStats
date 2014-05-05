@@ -1,6 +1,6 @@
 # anthStats
 
-[![Build Status](https://secure.travis-ci.org/ijse/anthStats.png?branch=master)](http://travis-ci.org/user/anthStats)
+[![Build Status](https://secure.travis-ci.org/ijse/anthStats.png?branch=master)](http://travis-ci.org/ijse/anthStats)
 
 ## Features
 
